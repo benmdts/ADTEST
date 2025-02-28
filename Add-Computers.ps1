@@ -2,8 +2,8 @@
 $domain = "DC=pmelocale,DC=local"
 
 # OUs où seront créés les ordinateurs
-$ouPathPostesFixes = "OU=Postes_Fixes,OU=PME,$domain"
-$ouPathPostesPortables = "OU=Postes_Portables,OU=PME,$domain"
+$ouPathPostesFixes = "OU=Postes_Fixes,OU=Ordinateurs,OU=PME,$domain"
+$ouPathPostesPortables = "OU=Postes_Portables,OU=Ordinateurs,OU=PME,$domain"
 $ouPathServers = "OU=Serveurs,OU=PME,$domain"
 
 # Liste des ordinateurs à créer
