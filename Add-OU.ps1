@@ -1,26 +1,30 @@
 # Définition du domaine AD (remplace avec ton domaine si nécessaire)
 $domain = "DC=pmelocale,DC=local"
 
-# Liste des OU à créer
+# Liste des OU avec leurs emplacements corrects
 $ouList = @(
-    "OU=PME,$domain",
-    "OU=Utilisateurs,OU=PME,$domain",
-    "OU=Groupes,OU=PME,$domain",
-    "OU=Ressources,OU=PME,$domain",
-    "OU=Imprimantes,OU=Ressources,OU=PME,$domain",
-    "OU=Ordinateurs,OU=PME,$domain",
-    "OU=Postes_Fixes,OU=Ordinateurs,OU=PME,$domain",
-    "OU=Postes_Portables,OU=Ordinateurs,OU=PME,$domain",
-    "OU=Serveurs,OU=Ordinateurs,OU=PME,$domain"
+    @{ Name="PME"; Path=$domain },
+    @{ Name="Utilisateurs"; Path="OU=PME,$domain" },
+    @{ Name="Groupes"; Path="OU=PME,$domain" },
+    @{ Name="Ressources"; Path="OU=PME,$domain" },
+    @{ Name="Imprimantes"; Path="OU=Ressources,OU=PME,$domain" },
+    @{ Name="Ordinateurs"; Path="OU=PME,$domain" },
+    @{ Name="Postes_Fixes"; Path="OU=Ordinateurs,OU=PME,$domain" },
+    @{ Name="Postes_Portables"; Path="OU=Ordinateurs,OU=PME,$domain" },
+    @{ Name="Serveurs"; Path="OU=Ordinateurs,OU=PME,$domain" }
 )
 
 # Création des OU si elles n'existent pas encore
 foreach ($ou in $ouList) {
-    if (-not (Get-ADOrganizationalUnit -Filter { DistinguishedName -eq $ou } -ErrorAction SilentlyContinue)) {
-        New-ADOrganizationalUnit -Name ($ou -split ",")[0] -Path ($ou -replace "OU=[^,]+,", "") -ProtectedFromAccidentalDeletion $false
-        Write-Host "✅ OU créée : $ou"
+    $ouName = $ou.Name
+    $ouPath = $ou.Path
+
+    # Vérifie si l'OU existe déjà
+    if (-not (Get-ADOrganizationalUnit -Filter { Name -eq $ouName -and DistinguishedName -like "*$ouPath*" } -ErrorAction SilentlyContinue)) {
+        New-ADOrganizationalUnit -Name $ouName -Path $ouPath -ProtectedFromAccidentalDeletion $false
+        Write-Host "✅ OU créée : $ouName sous $ouPath"
     } else {
-        Write-Host "⏭️ OU déjà existante : $ou"
+        Write-Host "⏭️ OU déjà existante : $ouName sous $ouPath"
     }
 }
 
